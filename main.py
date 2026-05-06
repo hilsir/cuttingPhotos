@@ -23,7 +23,7 @@ def start ():
 def processing():
     img_paths = os.getenv("IMG_PATHS")
     output_dir = os.getenv("OUTPUT_DIR")
-    list_img_paths = [p.strip() for p in img_paths.split(",") if p.strip()]
+    list_img_paths = [p.strip() for p in img_paths.split("|") if p.strip()]
 
     # Загружаем модель
     cutter = ImageCutter()
