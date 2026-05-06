@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 import time
@@ -51,4 +50,6 @@ def processing():
 
 if __name__ == "__main__":
     print("start")
-    start()
+    processing()
+    # пока без старта - в стерте выполняется свё по таймеру
+    # start()
