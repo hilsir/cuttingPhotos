@@ -20,7 +20,14 @@ class ImageCutter:
             print(f"Ошибка: Не удалось загрузить {image_path}")
             return
 
+        # parents=True создаст всю цепочку папок, exist_ok=True не выдаст ошибку если папка уже есть
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+
         detected_goods = self.model(img)
+
+        if not detected_goods or len(detected_goods[0].boxes) == 0:
+            print(f"Объекты на {image_path} не обнаружены.")
+            return
 
         # Нарезка найденных объектов
         for detected_good in detected_goods:

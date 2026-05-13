@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import time
 from datetime import datetime, timedelta, timezone
+from path_collector import PathCollector
 from cutting  import ImageCutter
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,32 +22,22 @@ def start ():
         time.sleep(30)
 
 def processing():
-    img_paths = os.getenv("IMG_PATHS")
-    output_dir = os.getenv("OUTPUT_DIR")
-    list_img_paths = [p.strip() for p in img_paths.split("|") if p.strip()]
-
     # Загружаем модель
     cutter = ImageCutter()
 
-    for path_str in list_img_paths:
+    img_paths = PathCollector()
+    images_list, outputs_list = img_paths.get_path_list()
 
-        input_path_obj = Path(path_str)
-        input_folder_name = input_path_obj.name
-        output_path = f"{output_dir}/{input_folder_name}"
-        output_path_obj = Path(output_path)
+    for img_path, out_path in zip(images_list, outputs_list):
+
+        output_path_obj = Path(out_path)
 
         if not output_path_obj.exists():
             output_path_obj.mkdir(parents=True, exist_ok=True)
-            print(f"Создана отсутствующая папка: {output_path}")
+            print(f"Создана отсутствующая папка: {out_path}")
 
-        # Получаем файл с присмтавкой _final
-        file_path = next(input_path_obj.glob("*_final.*"), None)
 
-        if not file_path:
-            print(f"В папке {input_path_obj} нет файлов с пометкой '_final'")
-            return
-
-        cutter.process_image(file_path, output_path)
+        cutter.process_image(img_path, out_path)
 
 if __name__ == "__main__":
     print("start")
