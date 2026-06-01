@@ -29,8 +29,9 @@ class ShelfSorter:
         return line[-1][1]
 
     def resolve_shelf_path(self, output_path: str, image_path: str, cx: int, cy: int) -> str:
-        # ID камеры — часть имени файла до первого подчёркивания (без расширения)
-        camera_id = Path(image_path).stem.split('_')[0]
+        # ID берём из имени папки с изображением, а не из имени файла
+        # На сервере файлы называются по IP камеры, папка — по продукту
+        camera_id = Path(image_path).parent.name.split('_')[0]
         lines = self._load_lines(camera_id)
 
         if lines is None:
