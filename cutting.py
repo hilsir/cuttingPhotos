@@ -3,6 +3,7 @@ from pathlib import Path
 from ultralytics import YOLO
 from datetime import datetime
 from dotenv import load_dotenv
+from shelf_sorter import ShelfSorter
 load_dotenv()
 
 # Планируется, что эта система будет работать на файловом сервере
@@ -12,6 +13,7 @@ class ImageCutter:
     def __init__(self):
         model_path = os.getenv("MODEL_PATH")
         self.model = YOLO(model_path)
+        self.shelf_sorter = ShelfSorter(os.getenv("MARKUP_PATH"))
 
     def process_image(self, image_path: str, output_path: str):
         img = cv2.imread(image_path)
@@ -32,14 +34,18 @@ class ImageCutter:
         # Нарезка найденных объектов
         for detected_good in detected_goods:
             for box in detected_good.boxes:
-                # Координаты на товара фотографии
+                # Координаты товара на фотографии
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 # Обрезаем изображение
                 cutting_img = img[y1:y2, x1:x2]
 
+                # Определяем полку по центру бокса
+                cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+                save_path = self.shelf_sorter.resolve_shelf_path(output_path, image_path, cx, cy)
+
                 # Формируем имя файла по времени
                 times = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-                cutting_img_name = f"{output_path}/img_{times}.png"
+                cutting_img_name = f"{save_path}/img_{times}.png"
 
                 cv2.imwrite(str(cutting_img_name), cutting_img)
 

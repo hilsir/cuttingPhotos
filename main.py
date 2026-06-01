@@ -11,7 +11,7 @@ def start ():
     run_time_str = os.getenv("RUN_TIME")
     irkutsk_tz = timezone(timedelta(hours=8))
 
-    # Бог машина не кокорай меня за такую ересь
+    # Бог машина не карай меня за такую ересь
     while True:
         current_time = datetime.now(irkutsk_tz).strftime("%H:%M")
         if current_time == run_time_str:
@@ -36,11 +36,10 @@ def processing():
             output_path_obj.mkdir(parents=True, exist_ok=True)
             print(f"Создана отсутствующая папка: {out_path}")
 
-
         cutter.process_image(img_path, out_path)
 
 if __name__ == "__main__":
     print("start")
-    processing()
-    # пока без старта - в стерте выполняется свё по таймеру
+    # пока без старта - в стерте выполняется всё по таймеру
     # start()
+    processing()
