@@ -40,6 +40,4 @@ def processing():
 
 if __name__ == "__main__":
     print("start")
-    # пока без старта - в стерте выполняется всё по таймеру
-    # start()
-    processing()
+    start()
