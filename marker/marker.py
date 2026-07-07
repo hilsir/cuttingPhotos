@@ -61,16 +61,29 @@ def mouse_event(event, x, y, flags, param):
             print("Нужно минимум 2 точки")
 
 
+def find_images():
+    # Рекурсивно обходим SOURCE_FOLDER, для каждой конечной папки
+    # берём только один файл-изображение (дубликаты в конечной папке игнорируем).
+    # camera_id — имя папки, в которой лежит фото.
+    result = []
+    for root, _, filenames in os.walk(SOURCE_FOLDER):
+        images = sorted(f for f in filenames if f.endswith(('.jpg', '.png')))
+        if not images:
+            continue
+        camera_id = os.path.basename(root).split('_')[0]
+        result.append((camera_id, os.path.join(root, images[0])))
+    return result
+
+
 def process_images():
     global lines, current_points, temp_img
 
-    files = [f for f in os.listdir(SOURCE_FOLDER) if f.endswith(('.jpg', '.png'))]
+    for camera_id, img_path in find_images():
+        markup_path = os.path.join(MARKUP_FOLDER, f"{camera_id}.json")
+        if os.path.exists(markup_path):
+            print(f"Пропуск {camera_id}: разметка уже есть")
+            continue
 
-    for filename in files:
-        # Извлекаем ID камеры (всё до первого подчёркивания)
-        camera_id = filename.split('_')[0]
-
-        img_path = os.path.join(SOURCE_FOLDER, filename)
         original_img = cv2.imread(img_path)
         if original_img is None:
             continue
@@ -114,7 +127,6 @@ def process_images():
                     print("Нужно минимум 2 точки")
 
             elif key == ord('s'):
-                markup_path = os.path.join(MARKUP_FOLDER, f"{camera_id}.json")
                 with open(markup_path, 'w') as f:
                     json.dump(lines, f)
                 print(f"Сохранено {len(lines)} линий в {camera_id}.json")
