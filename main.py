@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import time
 from datetime import datetime, timedelta, timezone
 from path_collector import PathCollector
@@ -29,15 +28,9 @@ def processing():
     images_list, outputs_list = img_paths.get_path_list()
 
     for img_path, out_path in zip(images_list, outputs_list):
-
-        output_path_obj = Path(out_path)
-
-        if not output_path_obj.exists():
-            output_path_obj.mkdir(parents=True, exist_ok=True)
-            print(f"Создана отсутствующая папка: {out_path}")
-
         cutter.process_image(img_path, out_path)
 
 if __name__ == "__main__":
     print("start")
+    # processing()
     start()

@@ -13,7 +13,7 @@ class ImageCutter:
     def __init__(self):
         model_path = os.getenv("MODEL_PATH")
         self.model = YOLO(model_path)
-        self.shelf_sorter = ShelfSorter(os.getenv("MARKUP_PATH"))
+        self.shelf_sorter = ShelfSorter(os.getenv("MARKUP_PATH"), os.getenv("DATA_ROUTER_PATH"))
 
     def process_image(self, image_path: str, output_path: str):
         img = cv2.imread(image_path)
@@ -21,9 +21,6 @@ class ImageCutter:
         if img is None:
             print(f"Ошибка: Не удалось загрузить {image_path}")
             return
-
-        # parents=True создаст всю цепочку папок, exist_ok=True не выдаст ошибку если папка уже есть
-        Path(output_path).mkdir(parents=True, exist_ok=True)
 
         detected_goods = self.model(img)
 
@@ -42,6 +39,10 @@ class ImageCutter:
                 # Определяем полку по центру бокса
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
                 save_path = self.shelf_sorter.resolve_shelf_path(output_path, image_path, cx, cy)
+
+                # parents=True создаст всю цепочку папок, exist_ok=True не выдаст ошибку если папка уже есть
+                # Создаём только сейчас - когда точно есть что сохранить
+                Path(save_path).mkdir(parents=True, exist_ok=True)
 
                 # Формируем имя файла по времени
                 times = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
