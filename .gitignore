@@ -1,6 +1,7 @@
 .venv
 .idea
 .env
+/__pycache__/
 cutting_img
 models
 img_test
